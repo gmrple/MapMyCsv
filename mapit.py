@@ -12,10 +12,9 @@ with open("./MapMyCsv.yaml", "r") as f:
     config = yaml.safe_load(f)
     elipsoid = config['settings']['elipsoid']
     csvPath = config['settings']['csvPath']
-    crsId = int(elipsoid.split(":")[1])
     
     # Initiate Application
-    QgsApplication.setPrefixPath("/usr/bin/qgis", True)
+    QgsApplication.setPrefixPath("/usr", True)
     print("set prefix")
     qgs = QgsApplication([], False)
     
@@ -24,12 +23,13 @@ with open("./MapMyCsv.yaml", "r") as f:
 
     # Start project instance
     project = QgsProject.instance()
-    #project.setCrs(QgsCoordinateReferenceSystem(crsId))
+    #project.setCrs(QgsCoordinateReferenceSystem(elipsoid))
+    project.setCrs(QgsCoordinateReferenceSystem("EPSG:4326"))
 
     # Build layer from CSV and check validity
-    uri = 'file://' + csvPath +'?delimiter={}&xField={}&yField={}&crs={}'.format(',', 'longitude', 'latitude',{'epsg:4326'})
+    uri = 'file://' + csvPath +"?type=csv&detectTypes=yes&crs=EPSG:4326&xField=longitude&yField=latitude&spatialIndex=no&subsetIndex=no"
     print(uri)
-    csvLayer = QgsVectorLayer(uri, 'Locations', 'delimitedtext')
+    csvLayer = QgsVectorLayer(uri, 'GpsLocations', 'delimitedtext')
 
     tms = 'type=xyz&url=https://tile.openstreetmap.org/{z}/{x}/{y}.png&zmax=19&zmin=0'
     osmLayer = QgsRasterLayer(tms,'OSM', 'wms')
@@ -56,7 +56,7 @@ with open("./MapMyCsv.yaml", "r") as f:
 
     # Set layer order and output options
     options = QgsMapSettings()
-    options.setLayers([osmLayer,csvLayer])
+    options.setLayers([csvLayer,osmLayer])
     options.setBackgroundColor(QColor("transparent"))
     options.setOutputSize(QSize(3840, 2160))
     options.setExtent(csvLayer.extent())
