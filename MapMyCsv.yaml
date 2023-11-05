@@ -1,3 +1,4 @@
 settings:
   elipsoid: "EPSG:8719"
   csvPath: "/home/kevin/proj/MapMyCsv/sample.csv"
+  prefixPath: "/usr"
