@@ -58,8 +58,13 @@ if len(argv) > 2:
             # to gett the settings that are in the URI
             uri = 'file:///'+csvPath+"?type=csv&detectTypes=yes&crs="+crs+"&xField=longitude&yField=latitude&spatialIndex=no&subsetIndex=no"
             csvLayer = QgsVectorLayer(uri, 'GpsLocations', 'delimitedtext')
+            
+            if not csvLayer.isValid():
+                print("invailid layer: " + csvPath)
+                exit(1)
+            
             project.addMapLayer(csvLayer)
-
+            
             csvSymbols = csvLayer.renderer().symbol()
             csvSymbols.setColor(QColor(color))
             csvLayer.triggerRepaint()

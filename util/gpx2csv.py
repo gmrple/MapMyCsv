@@ -16,7 +16,7 @@ with open(argv[1], "r") as f:
             tokens = line.split("\"")
             latitude  = float(tokens[1])
             longitude = float(tokens[3])
-            if (offset)
+            if offset:
                 latitude = latitude + 0.0001
             row.append(latitude)
             row.append(longitude)
