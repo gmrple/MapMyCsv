@@ -2,6 +2,7 @@
 
 import yaml
 from sys import argv, exit
+from os.path import basename
 
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QColor
@@ -57,7 +58,7 @@ if len(argv) > 2:
             # if you get a file imported as you want in the desktop application, you can hover over the layer
             # to gett the settings that are in the URI
             uri = 'file:///'+csvPath+"?type=csv&detectTypes=yes&crs="+crs+"&xField=longitude&yField=latitude&spatialIndex=no&subsetIndex=no"
-            csvLayer = QgsVectorLayer(uri, 'GpsLocations', 'delimitedtext')
+            csvLayer = QgsVectorLayer(uri, basename(csvPath), 'delimitedtext')
             
             if not csvLayer.isValid():
                 print("invailid layer: " + csvPath)
