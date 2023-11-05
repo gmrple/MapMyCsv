@@ -20,14 +20,16 @@ with open("./MapMyCsv.yaml", "r") as f:
     
     qgs.initQgis()
     print("Application initiated")
+    
+    wgs84="EPSG:4326"
 
     # Start project instance
     project = QgsProject.instance()
     #project.setCrs(QgsCoordinateReferenceSystem(elipsoid))
-    project.setCrs(QgsCoordinateReferenceSystem("EPSG:4326"))
+    project.setCrs(QgsCoordinateReferenceSystem(elipsoid))
 
     # Build layer from CSV and check validity
-    uri = 'file://' + csvPath +"?type=csv&detectTypes=yes&crs=EPSG:4326&xField=longitude&yField=latitude&spatialIndex=no&subsetIndex=no"
+    uri = 'file://'+csvPath+"?type=csv&detectTypes=yes&crs="+wgs84+"&xField=longitude&yField=latitude&spatialIndex=no&subsetIndex=no"
     print(uri)
     csvLayer = QgsVectorLayer(uri, 'GpsLocations', 'delimitedtext')
 
@@ -60,6 +62,7 @@ with open("./MapMyCsv.yaml", "r") as f:
     options.setBackgroundColor(QColor("transparent"))
     options.setOutputSize(QSize(3840, 2160))
     options.setExtent(csvLayer.extent())
+    options.setDestinationCrs(QgsCoordinateReferenceSystem(wgs84))
 
     mapLayers = project.mapLayers()
     for x, y in enumerate(mapLayers): print('Layer ' + str(x+1) + ': '+ str(y.split('_')[0]))
