@@ -7,6 +7,8 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QColor
 from qgis.core import QgsApplication, QgsProject, QgsCoordinateReferenceSystem, QgsVectorLayer, QgsRasterLayer, QgsMapSettings, QgsMapRendererParallelJob
 
+# this should be platorm indepentent - will do windows testing later
+
 with open("./MapMyCsv.yaml", "r") as f:
     config = yaml.safe_load(f)
     elipsoid = config['settings']['elipsoid']
@@ -32,11 +34,15 @@ with open("./MapMyCsv.yaml", "r") as f:
 
     project.addMapLayer(osmLayer)
     project.addMapLayer(csvLayer)
-    
+
     csvSymbols = csvLayer.renderer().symbol()
     csvSymbols.setColor(QColor('red'))
     csvLayer.triggerRepaint()
 
+    # layers are done now - if you didn't care about the image, but wanted a project with
+    # the defined layers you could skip to project.write() and open the resulting file
+
+    # generate an image
     options = QgsMapSettings()
     options.setLayers([csvLayer,osmLayer])
     options.setBackgroundColor(QColor("transparent"))
