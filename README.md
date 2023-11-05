@@ -1,4 +1,4 @@
-H.2 Map My CSV
+# Map My CSV
 Script to take a CSV containing latitude and longitude and creating a QGIS project and a image of the data mapped on OpenStreetMaps 
 NOTE: The CSV file MUST have a row at the top with `latitude,longitude,etc` set in the order of the following data
 
