@@ -1,0 +1,4 @@
+settings:
+  projectCrs: "EPSG:8719"
+  csvPath:    "C:/Users/gmrpl/OneDrive/Documents/GitHub/MapMyCsv/sample.csv"
+  prefixPath: "C:/Program Files/QGIS 3.28.12"
