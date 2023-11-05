@@ -13,4 +13,4 @@ REM PYTHONPATH is the serach path for the QGIS python modules
 set PYTHONPATH=%QGIS_INSTALL%\apps\qgis-ltr\python
 set PYTHONHOME=%QGIS_INSTALL%\apps\Python39
 
-python MapMyCsv.py "%QGIS_INSTALL%" config/config-windows.yaml
+python map_my_csv.py "%QGIS_INSTALL%" config/config-windows.yaml
