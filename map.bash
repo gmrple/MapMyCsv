@@ -6,4 +6,4 @@
 
 # sets environment needed to run in archlinux 4 NOV 2023
 export PYTHONPATYH=/usr/share/qgis/python
-./MapMyCsv.py config/config-linux.yaml
+./MapMyCsv.py /usr config/config-linux.yaml

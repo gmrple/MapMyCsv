@@ -1,4 +1,8 @@
-settings:
-  projectCrs: "EPSG:8719"
-  csvPath:    "/home/kevin/proj/MapMyCsv/sample.csv"
-  prefixPath: "/usr"
+project:
+  crs: "EPSG:8719"
+  layers: 
+  - csvPath: "/home/kevin/proj/MapMyCsv/sample.csv"
+    crs:     "EPSG:4326"
+    color:   "red"
+  - csvPath: "/home/kevin/proj/MapMyCsv/sample2.csv"
+    color: "blue"

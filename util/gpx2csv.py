@@ -6,14 +6,20 @@ from sys import argv
 # many work out trackers, for example Garmin bike computers. This is what 
 # I used to generate my test csvs
 
+offset = True
+
 print("latitude,longitude,time")
 row = list()
 with open(argv[1], "r") as f:
     for line in f:
         if "lat=" in line:
             tokens = line.split("\"")
-            row.append(float(tokens[1]))
-            row.append(float(tokens[3]))
+            latitude  = float(tokens[1])
+            longitude = float(tokens[3])
+            if (offset)
+                latitude = latitude + 0.0001
+            row.append(latitude)
+            row.append(longitude)
         if "<time>" in line:
             if len(row) == 2:
                 row.append(line.split(">")[1].split("<")[0])

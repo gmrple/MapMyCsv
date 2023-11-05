@@ -8,5 +8,7 @@ Dependencies - a working QGIS Install. Tested with QGIS 3.34
 
 TODO:
 * Add a legend with a figure noting scale
-* Ensure this works on windows
-* make layers configurable
+* ~~Ensure this works on windows~~ Done!
+* ~~make layers configurable~~ you can now add multiple layers
+* handle determining output map extent based on all of the layers
+
