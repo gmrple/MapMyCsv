@@ -4,7 +4,7 @@ NOTE: The CSV file MUST have a row at the top with `latitude,longitude,etc` set 
 
 used https://github.com/thehatter8/CSVMappy/blob/main/mapbuilder.py as a starting point. This works on Arch Linux as of 4 Nov 2023.
 
-Dependencies - a working QGIS Install. Tested with QGIS 3.34
+Dependencies - a working QGIS Install. Tested with QGIS 3.34 on Arch Linux and 3.28 on Windows 11
 
 ## How To
 1. Update the paths in map.bash or map.bat to match your QGIS install and version
