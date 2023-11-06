@@ -1,5 +1,5 @@
 project:
-  crs: "EPSG:8719"
+  crs: "EPSG:4326"
   layers: 
   - csvPath: "/home/kevin/proj/MapMyCsv/sample.csv"
     crs:     "EPSG:4326"

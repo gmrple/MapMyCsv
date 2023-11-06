@@ -9,18 +9,24 @@
 """
 
 import sys
-from os.path import basename
+from os.path      import basename
 import yaml
 
 from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QColor
-from qgis.core import QgsApplication, QgsProject,                     \
-        QgsCoordinateReferenceSystem, QgsVectorLayer, QgsRasterLayer, \
-        QgsMapSettings, QgsMapRendererParallelJob, QgsRectangle
+from PyQt5.QtGui  import QColor
+from qgis.core    import QgsApplication, QgsProject,                           \
+        QgsCoordinateReferenceSystem, QgsVectorLayer, QgsRasterLayer,          \
+        QgsMapSettings, QgsMapRendererParallelJob, QgsRectangle,               \
+        QgsLayoutItemMap, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes,         \
+        QgsPrintLayout, QgsLayoutItemLabel, QgsLayoutExporter,                 \
+        QgsLayoutItemLegend, QgsLayoutItemScaleBar
 
-# this should be platorm indepentent - will do windows testing later
+# this is platform indepentent - will do Mac OS testing later, works on Windows and Linux
 
+#constants
 WGS84="EPSG:4326"
+
+# read command line args and config
 if len(sys.argv) > 2:
     PREFIX      = sys.argv[1]
     config_path = sys.argv[2]
@@ -46,9 +52,11 @@ if len(sys.argv) > 2:
             print(config)
             sys.exit(1)
 
+        f.close()
+
+        # start the QGIS instance
         QgsApplication.setPrefixPath(PREFIX, True)
         qgs = QgsApplication([], False)
-
         qgs.initQgis()
 
         project = QgsProject.instance()
@@ -89,11 +97,12 @@ if len(sys.argv) > 2:
             csvLayer.triggerRepaint()
             allLayers.insert(0,csvLayer)
         
+        # define a rectangle that all the data fits in
         extent = allLayers[0].extent()
-        xmax = extent.xMaximum() 
-        xmin = extent.xMinimum() 
-        ymax = extent.yMaximum() 
-        ymin = extent.yMinimum() 
+        xmax = extent.xMaximum()
+        xmin = extent.xMinimum()
+        ymax = extent.yMaximum()
+        ymin = extent.yMinimum()
         for layer in allLayers:
             extent = layer.extent()
             if extent.xMinimum() < xmin:
@@ -106,7 +115,7 @@ if len(sys.argv) > 2:
                 ymin = extent.yMaximum()
 
         rect = QgsRectangle(xmin, ymin, xmax, ymax)
-        rect.scale(1.1)
+        rect.scale(1.1) # zoom out a bit for context
         allLayers.append(osmLayer)
 
         # layers are done now - if you didn't care about the image, but wanted
@@ -129,7 +138,41 @@ if len(sys.argv) > 2:
         img.save(IMAGE_LOCATION, 'png')
 
         print('Map has been rendered to: ' + IMAGE_LOCATION)
-        project.write("project.qgz")
 
+        # Create a layout based output
+        layout = QgsPrintLayout(project)
+        layout.initializeDefaults()
+        layout.setName("GeneratedLayout")
+        project.layoutManager().addLayout(layout)
+        
+        # elements in the layout
+        theMap = QgsLayoutItemMap(layout)
+        # example resizes here... not sure that's something I want
+        theMap.attemptMove(QgsLayoutPoint(5,5, QgsUnitTypes.LayoutMillimeters))
+        theMap.attemptResize(QgsLayoutSize(200,200, QgsUnitTypes.LayoutMillimeters))
+
+        theMap.zoomToExtent(rect)
+        layout.addItem(theMap)
+
+        # Retrieve width & height values of map item
+        map_item = [i for i in layout.items() if isinstance(i, QgsLayoutItemMap)][0]
+        map_width = map_item.sizeWithUnits().width()
+        map_height = map_item.sizeWithUnits().height()
+        
+        legend = QgsLayoutItemLegend(layout)
+        legend.setLinkedMap(theMap)
+        layout.addLayoutItem(legend)
+
+        scaleBar = QgsLayoutItemScaleBar(layout)
+        scaleBar.setStyle("Double Box")
+        scaleBar.setLinkedMap(theMap)
+        scaleBar.applyDefaultSize()
+        layout.addLayoutItem(scaleBar)
+        legend.attemptMove(QgsLayoutPoint(map_width-30, map_height-20, QgsUnitTypes.LayoutMillimeters), useReferencePoint=True)
+
+        exporter = QgsLayoutExporter(layout)
+        exporter.exportToPdf("./demo.pdf", QgsLayoutExporter.PdfExportSettings())
+
+        project.write("project.qgz")
         qgs.exitQgis()
         print("Exiting")
