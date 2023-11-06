@@ -18,7 +18,7 @@ with open(argv[1], "r", encoding="UTF-8") as f:
             latitude  = float(tokens[1])
             longitude = float(tokens[3])
             if OFFSET:
-                latitude = latitude + 0.0001
+                latitude = latitude + 0.01
             row.append(latitude)
             row.append(longitude)
         if "<time>" in line:

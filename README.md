@@ -6,9 +6,14 @@ used https://github.com/thehatter8/CSVMappy/blob/main/mapbuilder.py as a startin
 
 Dependencies - a working QGIS Install. Tested with QGIS 3.34
 
-TODO:
+## How To
+1. Update the paths in map.bash or map.bat to match your QGIS install and version
+2. modify a config file (see the config folder) to specify the CSVs you want mapped
+3. run map.bash or map.bat if you are on Linux or Windows respectively
+4. check out file.png and project.qgz
+
+## TODO
 * Add a legend with a figure noting scale
 * ~~Ensure this works on windows~~ Done!
 * ~~make layers configurable~~ you can now add multiple layers
-* handle determining output map extent based on all of the layers
-
+* ~~handle determining output map extent based on all of the layers~~ Rendered image is set based on the space occupied by all csv layers

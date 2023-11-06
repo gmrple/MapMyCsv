@@ -16,7 +16,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QColor
 from qgis.core import QgsApplication, QgsProject,                     \
         QgsCoordinateReferenceSystem, QgsVectorLayer, QgsRasterLayer, \
-        QgsMapSettings, QgsMapRendererParallelJob
+        QgsMapSettings, QgsMapRendererParallelJob, QgsRectangle
 
 # this should be platorm indepentent - will do windows testing later
 
@@ -28,16 +28,16 @@ if len(sys.argv) > 2:
         try:
             config     = yaml.safe_load(f)
             projectCrs = config['project']['crs']
-            layers     = config['project']['layers']
+            csvFiles   = config['project']['layers']
 
             # sanity check the specification
-            for layer in layers:
-                if "csvPath" not in layer:
+            for csvFile in csvFiles:
+                if "csvPath" not in csvFile:
                     print("missing required field, csvPath")
                     sys.exit(1)
-                if "crs" not in layer:
-                    layer['crs'] = WGS84
-                if "color" not in layer:
+                if "crs" not in csvFile:
+                    csvFile['crs'] = WGS84
+                if "color" not in csvFile:
                     print("missing required field, color")
                     sys.exit(1)
 
@@ -60,11 +60,13 @@ if len(sys.argv) > 2:
         osmLayer = QgsRasterLayer(TMS,'OSM', 'wms')
         project.addMapLayer(osmLayer)
 
-        allLayers = [osmLayer]
-        for layer in layers:
-            csvPath = layer['csvPath']
-            crs     = layer['crs']
-            color   = layer['color']
+        allLayers = []
+
+        # create layers for each CSV file
+        for csvFile in csvFiles:
+            csvPath = csvFile['csvPath']
+            crs     = csvFile['crs']
+            color   = csvFile['color']
 
             # if you get a file imported as you want in the desktop application
             # you can hover over the layer # to gett the settings that are in
@@ -86,6 +88,26 @@ if len(sys.argv) > 2:
             csvSymbols.setColor(QColor(color))
             csvLayer.triggerRepaint()
             allLayers.insert(0,csvLayer)
+        
+        extent = allLayers[0].extent()
+        xmax = extent.xMaximum() 
+        xmin = extent.xMinimum() 
+        ymax = extent.yMaximum() 
+        ymin = extent.yMinimum() 
+        for layer in allLayers:
+            extent = layer.extent()
+            if extent.xMinimum() < xmin:
+                xmin = extent.xMinimum()
+            if extent.xMaximum() > xmax:
+                xmin = extent.xMaximum()
+            if extent.yMinimum() < ymin:
+                ymin = extent.yMinimum()
+            if extent.yMaximum() > ymax:
+                ymin = extent.yMaximum()
+
+        rect = QgsRectangle(xmin, ymin, xmax, ymax)
+        rect.scale(1.1)
+        allLayers.append(osmLayer)
 
         # layers are done now - if you didn't care about the image, but wanted
         # a project with the defined layers you could skip to project.write()
@@ -96,7 +118,7 @@ if len(sys.argv) > 2:
         options.setLayers(allLayers)
         options.setBackgroundColor(QColor("transparent"))
         options.setOutputSize(QSize(3840, 2160))
-        options.setExtent(allLayers[0].extent())
+        options.setExtent(rect)
         options.setDestinationCrs(QgsCoordinateReferenceSystem(WGS84))
 
         render = QgsMapRendererParallelJob(options)
